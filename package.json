@@ -1,0 +1,22 @@
+{
+  "name": "hospesdb",
+  "version": "0.1.0",
+  "description": "base de datos de hospesdb ",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard",
+    "test": "npm run lint && ava"
+  },
+  "author": " <miguelzavalac@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "ava": "^0.18.2",
+    "standard": "^8.6.0"
+  },
+  "dependencies": {
+    "bluebird": "^3.4.7",
+    "co": "^4.6.0",
+    "rethinkdb": "^2.3.3",
+    "uuid-base62": "^0.1.0"
+  }
+}
