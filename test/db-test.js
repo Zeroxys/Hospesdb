@@ -50,12 +50,23 @@ test('Test para guardar un blog', async t => {
 test('Test para like blog', async t => {
   t.is(typeof db.likeBlog, 'function', 'Deberia ser una funcion')
 
-  let blog = await fixtures.getBlog()
+  let blog = fixtures.getBlog()
   let created = await db.saveBlog(blog)
   let result = await db.likeBlog(created.public_id)
 
   t.true(result.liked)
   t.is(result.likes, blog.likes + 1)
+})
+
+// Test para obtener un blog
+test('Test para obtener un blog', async t => {
+  t.is(typeof db.getBlogDb, 'function', 'Deberia ser una funcion')
+
+  let blog = fixtures.getBlog()
+  let created = await db.saveBlog(blog)
+  let result = await db.getBlogDb(created.public_id)
+
+  t.deepEqual(created, result)
 })
 
 // Test para guardar los trabajos
