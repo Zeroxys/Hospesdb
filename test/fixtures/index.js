@@ -13,6 +13,15 @@ const fixtures = {
       blog_id: uuid.uuid()
     }
   },
+
+  getBlogs (n) {
+    let blogs = []
+    while (n-- > 0) {
+      blogs.push(this.getBlog())
+    }
+    return blogs
+  },
+
   getWork () {
     return {
       url: [`https://hospes.com/works/work-01/${uuid.v4()}`, `https://hospes.com/works/work-02/${uuid.v4()}`],

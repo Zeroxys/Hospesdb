@@ -4,24 +4,24 @@ const uuid = require('uuid-base62')
 const r = require('rethinkdb')
 const fixtures = require('./fixtures')
 
-const DbName = `Hospesdb_${uuid.v4()}`
-const db = new Db({db: DbName})
-
 /* ------------------- AVA HOOK´s ------------------------------ */
 
-test.before('conectando a la db', async t => {
+test.beforeEach('conectando a la db', async t => {
+  const DbName = `Hospesdb_${uuid.v4()}`
+  const db = new Db({db: DbName})
   await db.connect()
+  t.context.DbName = DbName
+  t.context.db = db
   t.true(db.connected, 'deberias estar conectado a la db')
 })
 
 // despues de ejecutar los test
-test.after('desconectando de la db', async t => {
+test.afterEach.always('desconectando y limpiando la db', async t => {
+  let db = t.context.db
+  let DbName = t.context.DbName
   await db.disconnect()
   t.false(db.connected, 'esta conectado')
-})
 
-// siempre se ejecuta despues de los test
-test.after.always('eliminar la db de prueba', async t => {
   let conn = await r.connect({})
   await r.dbDrop(DbName).run(conn)
 })
@@ -30,6 +30,7 @@ test.after.always('eliminar la db de prueba', async t => {
 
 // Test para guardar un blog
 test('Test para guardar un blog', async t => {
+  let db = t.context.db
   t.is(typeof db.saveBlog, 'function', 'deberia ser function')
 
   let blog = fixtures.getBlog()
@@ -48,6 +49,7 @@ test('Test para guardar un blog', async t => {
 
 // Test para darle like al blog
 test('Test para like blog', async t => {
+  let db = t.context.db
   t.is(typeof db.likeBlog, 'function', 'Deberia ser una funcion')
 
   let blog = fixtures.getBlog()
@@ -60,6 +62,7 @@ test('Test para like blog', async t => {
 
 // Test para obtener un blog
 test('Test para obtener un blog', async t => {
+  let db = t.context.db
   t.is(typeof db.getBlogDb, 'function', 'Deberia ser una funcion')
 
   let blog = fixtures.getBlog()
@@ -69,8 +72,22 @@ test('Test para obtener un blog', async t => {
   t.deepEqual(created, result)
 })
 
+// Test para listar todos los blogs
+test('Test para listar todos blogs de forma descendente', async t => {
+  let db = t.context.db
+  let blogs = fixtures.getBlogs(3)
+
+  let saveBlogs = blogs.map(blog => db.saveBlog(blog))
+  let created = await Promise.all(saveBlogs)
+
+  let result = await db.getBlogsDb()
+
+  t.is(created.length, result.length)
+})
+
 // Test para guardar los trabajos
 test('Test para guardar los trabajos', async t => {
+  let db = t.context.db
   t.is(typeof db.saveWorks, 'function', 'Deberia ser una funcion')
 
   let work = fixtures.getWork()
