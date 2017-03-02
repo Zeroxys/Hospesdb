@@ -29,6 +29,23 @@ const fixtures = {
       descripcion: 'texto de descripcion de las imagenes',
       image_id: uuid.uuid()
     }
+  },
+
+  getWorks (n) {
+    let works = []
+    while (n-- > 0) {
+      works.push(this.getWork())
+    }
+    return works
+  },
+
+  getUser () {
+    return {
+      nombre: 'usuario administrador',
+      username: `usuario_${uuid.v4()}`,
+      password: uuid.uuid(),
+      email: `admin_${uuid.v4()}@mail.com`
+    }
   }
 }
 

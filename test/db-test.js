@@ -26,7 +26,7 @@ test.afterEach.always('desconectando y limpiando la db', async t => {
   await r.dbDrop(DbName).run(conn)
 })
 
-/* ------------------------ Test´s ---------------------------- */
+/* ------------------------ Test´s Blogs ---------------------------- */
 
 // Test para guardar un blog
 test('Test para guardar un blog', async t => {
@@ -77,13 +77,15 @@ test('Test para listar todos blogs de forma descendente', async t => {
   let db = t.context.db
   let blogs = fixtures.getBlogs(3)
 
-  let saveBlogs = blogs.map(blog => db.saveBlog(blog))
+  let saveBlogs = blogs.map((blog) => { db.saveBlog(blog) })
   let created = await Promise.all(saveBlogs)
 
   let result = await db.getBlogsDb()
 
   t.is(created.length, result.length)
 })
+
+/* ------------------------ Test´s Works ---------------------------- */
 
 // Test para guardar los trabajos
 test('Test para guardar los trabajos', async t => {
@@ -99,3 +101,31 @@ test('Test para guardar los trabajos', async t => {
   t.is(created.descripcion, work.descripcion)
   t.truthy(created.createdAt)
 })
+
+// Test para obtener un trabajo
+test('Test para obtener un trabajo', async t => {
+  let db = t.context.db
+
+  let work = fixtures.getWork()
+  let created = await db.saveWorks(work)
+  let result = await db.getWork(created.id)
+
+  t.is(typeof db.getWork, 'function', 'debeberia ser una funcion')
+  t.deepEqual(created, result)
+})
+
+// Test para listar todos los trabajos
+test('Test para listar todos los trabajos', async t => {
+  let db = t.context.db
+  t.is(typeof db.getWorks, 'function', 'Deberia ser una funcion')
+
+  let works = fixtures.getWorks(3)
+  let saveWorks = works.map((work) => { db.saveWorks(work) })
+  let created = Promise.all(saveWorks)
+
+  let result = await db.getWorks()
+
+  t.is(created.length, result.length)
+})
+
+/* --------------- Test para la creacion de usuario ------------------ */
