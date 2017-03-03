@@ -132,7 +132,7 @@ test('Test para listar todos los trabajos', async t => {
 
 /* --------------- Test´s para la creacion de usuario ------------------ */
 
-// Metodo para verificar usuario guardado
+// Test para verificar usuario guardado
 test('Guardando un usuario', async t => {
   let db = t.context.db
   t.is(typeof db.saveUser, 'function', 'Deberia ser una funcion')
@@ -146,4 +146,16 @@ test('Guardando un usuario', async t => {
   t.is(utils.encrypt(plainPassword), created.password)
   t.is(typeof created.id, 'string')
   t.truthy(created.createdAt)
+})
+
+// Test para traerme un usuario
+test('Test para traerme un usuario', async t => {
+  let db = t.context.db
+  t.is(typeof db.getUser, 'function', 'deberia ser una funcion')
+  let user = fixtures.getUser()
+  let created = await db.saveUser(user)
+
+  let result = await db.getUser(user.username)
+
+  t.deepEqual(created, result)
 })
