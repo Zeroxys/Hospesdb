@@ -159,3 +159,18 @@ test('Test para traerme un usuario', async t => {
 
   t.deepEqual(created, result)
 })
+
+// Metodo de autenticacion de usuarios
+test('Test para autenticar usuarios', async t => {
+  let db = t.context.db
+  t.is(typeof db.auth, 'function', 'deberia ser una funcion')
+  let user = fixtures.getUser()
+  let plainPassword = user.password
+  await db.saveUser(user)
+
+  let success = await db.auth(user.username, plainPassword)
+  t.true(success)
+
+  let fail = await db.auth(user.username, 'foo')
+  t.false(fail)
+})
