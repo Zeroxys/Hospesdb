@@ -9,7 +9,7 @@ const utils = require('../lib/utils.js')
 
 test.beforeEach('conectando a la db', async t => {
   const DbName = `Hospesdb_${uuid.v4()}`
-  const db = new Db({db: DbName})
+  const db = new Db({db: DbName, setup: true})
   await db.connect()
   t.context.DbName = DbName
   t.context.db = db
@@ -72,6 +72,8 @@ test('Test para obtener un blog', async t => {
   let result = await db.getBlogDb(created.public_id)
 
   t.deepEqual(created, result)
+
+  t.throws(db.getBlogDb('foo'), /not found/)
 })
 
 // Test para listar todos los blogs
@@ -158,6 +160,8 @@ test('Test para traerme un usuario', async t => {
   let result = await db.getUser(user.username)
 
   t.deepEqual(created, result)
+
+  t.throws(db.getUser('foo'), /not found/)
 })
 
 // Metodo de autenticacion de usuarios
@@ -173,4 +177,7 @@ test('Test para autenticar usuarios', async t => {
 
   let fail = await db.auth(user.username, 'foo')
   t.false(fail)
+
+  let failure = await db.auth('foo', 'bar')
+  t.false(failure)
 })
