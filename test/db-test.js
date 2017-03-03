@@ -3,6 +3,7 @@ const Db = require('../')
 const uuid = require('uuid-base62')
 const r = require('rethinkdb')
 const fixtures = require('./fixtures')
+const utils = require('../lib/utils.js')
 
 /* ------------------- AVA HOOK´s ------------------------------ */
 
@@ -19,6 +20,7 @@ test.beforeEach('conectando a la db', async t => {
 test.afterEach.always('desconectando y limpiando la db', async t => {
   let db = t.context.db
   let DbName = t.context.DbName
+
   await db.disconnect()
   t.false(db.connected, 'esta conectado')
 
@@ -75,7 +77,7 @@ test('Test para obtener un blog', async t => {
 // Test para listar todos los blogs
 test('Test para listar todos blogs de forma descendente', async t => {
   let db = t.context.db
-  let blogs = fixtures.getBlogs(3)
+  let blogs = fixtures.getBlogs()
 
   let saveBlogs = blogs.map((blog) => { db.saveBlog(blog) })
   let created = await Promise.all(saveBlogs)
@@ -119,13 +121,29 @@ test('Test para listar todos los trabajos', async t => {
   let db = t.context.db
   t.is(typeof db.getWorks, 'function', 'Deberia ser una funcion')
 
-  let works = fixtures.getWorks(3)
+  let works = fixtures.getWorks()
   let saveWorks = works.map((work) => { db.saveWorks(work) })
-  let created = Promise.all(saveWorks)
+  let created = await Promise.all(saveWorks)
 
   let result = await db.getWorks()
 
   t.is(created.length, result.length)
 })
 
-/* --------------- Test para la creacion de usuario ------------------ */
+/* --------------- Test´s para la creacion de usuario ------------------ */
+
+// Metodo para verificar usuario guardado
+test('Guardando un usuario', async t => {
+  let db = t.context.db
+  t.is(typeof db.saveUser, 'function', 'Deberia ser una funcion')
+  let user = fixtures.getUser()
+  let plainPassword = user.password
+  let created = await db.saveUser(user)
+
+  t.is(created.username, user.username)
+  t.is(created.name, user.name)
+  t.is(created.email, user.email)
+  t.is(utils.encrypt(plainPassword), created.password)
+  t.is(typeof created.id, 'string')
+  t.truthy(created.createdAt)
+})

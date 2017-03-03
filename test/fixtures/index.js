@@ -41,7 +41,7 @@ const fixtures = {
 
   getUser () {
     return {
-      nombre: 'usuario administrador',
+      name: 'usuario administrador',
       username: `usuario_${uuid.v4()}`,
       password: uuid.uuid(),
       email: `admin_${uuid.v4()}@mail.com`
